@@ -72,7 +72,11 @@ export default function TabView({ refreshKey }: TabViewProps) {
           ) : (
             <div className="space-y-3">
               {entries.map((entry) => (
-                <EntryCard key={entry.id} entry={entry} />
+                <EntryCard
+                  key={entry.id}
+                  entry={entry}
+                  onArchive={tab.value === 'action' ? () => fetchEntries('action') : undefined}
+                />
               ))}
             </div>
           )}

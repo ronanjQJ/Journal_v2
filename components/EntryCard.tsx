@@ -1,6 +1,9 @@
+'use client'
+
+import { useState } from 'react'
 import { Entry, EntryType, EntryStatus } from '@/lib/types'
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
+import { supabase } from '@/lib/supabase'
 
 const TYPE_CONFIG: Record<EntryType, { label: string; emoji: string; className: string }> = {
   journal: { label: 'Journal', emoji: '📝', className: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300' },
@@ -32,11 +35,19 @@ function formatDate(iso: string) {
 
 interface EntryCardProps {
   entry: Entry
+  onArchive?: () => void
 }
 
-export default function EntryCard({ entry }: EntryCardProps) {
+export default function EntryCard({ entry, onArchive }: EntryCardProps) {
+  const [loading, setLoading] = useState(false)
   const typeConfig = entry.type ? TYPE_CONFIG[entry.type] : null
   const statusConfig = STATUS_CONFIG[entry.status]
+
+  async function archive() {
+    setLoading(true)
+    await supabase.from('entries').update({ status: 'archived' }).eq('id', entry.id)
+    onArchive?.()
+  }
 
   return (
     <Card className="border-zinc-100 shadow-none hover:border-zinc-200 transition-colors dark:border-zinc-800">
@@ -83,6 +94,25 @@ export default function EntryCard({ entry }: EntryCardProps) {
             <span>🔗</span>
             <span>Ouvrir dans Teams</span>
           </a>
+        )}
+
+        {onArchive && (
+          <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex gap-2">
+            <button
+              onClick={archive}
+              disabled={loading}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 disabled:opacity-50 transition-colors dark:bg-emerald-950 dark:text-emerald-400"
+            >
+              ✓ Traité
+            </button>
+            <button
+              onClick={archive}
+              disabled={loading}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-zinc-100 text-zinc-500 hover:bg-zinc-200 disabled:opacity-50 transition-colors dark:bg-zinc-800 dark:text-zinc-400"
+            >
+              🗑 Ignorer
+            </button>
+          </div>
         )}
       </CardContent>
     </Card>
