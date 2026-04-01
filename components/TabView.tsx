@@ -3,13 +3,11 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { supabase } from '@/lib/supabase'
-import { Entry, EntryType } from '@/lib/types'
+import { Entry } from '@/lib/types'
 import EntryCard from './EntryCard'
 
 const TABS = [
-  { value: 'journal', label: '📝 Journal' },
-  { value: 'meeting', label: '🤝 Meetings' },
-  { value: 'knowledge', label: '💡 Knowledge' },
+  { value: 'all', label: '📋 Tout' },
   { value: 'action', label: '🔴 À traiter' },
 ] as const
 
@@ -20,7 +18,7 @@ interface TabViewProps {
 }
 
 export default function TabView({ refreshKey }: TabViewProps) {
-  const [activeTab, setActiveTab] = useState<TabValue>('journal')
+  const [activeTab, setActiveTab] = useState<TabValue>('all')
   const [entries, setEntries] = useState<Entry[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -34,8 +32,6 @@ export default function TabView({ refreshKey }: TabViewProps) {
 
     if (tab === 'action') {
       query = query.eq('status', 'action')
-    } else {
-      query = query.eq('type', tab as EntryType)
     }
 
     const { data } = await query
