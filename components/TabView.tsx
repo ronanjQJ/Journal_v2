@@ -67,7 +67,7 @@ export default function TabView({ refreshKey }: TabViewProps) {
             </div>
           ) : entries.length === 0 ? (
             <div className="text-center py-12 text-zinc-400 text-sm">
-              Aucune entrée pour l'instant.
+              {"Aucune entrée pour l'instant."}
             </div>
           ) : (
             <div className="space-y-3">
